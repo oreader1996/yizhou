@@ -1,0 +1,11 @@
+{
+  "BAIDU_APP_ID": "",
+  "BAIDU_APP_SECRET": "",
+  "QUOTA_SECRET": "",
+  "QUOTA_DB": "quota.sqlite",
+  "QUOTA_PER_MINUTE": 10,
+  "QUOTA_PER_DAY": 200,
+  "BAIDU_CALLS_PER_SECOND": 1,
+  "PORT": 8787,
+  "TRUST_LOOPBACK_PROXY": false
+}

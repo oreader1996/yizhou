@@ -1,0 +1,8 @@
+*
+!package.json
+!src/
+!src/translation.ts
+!service/
+!service/Dockerfile
+!service/src/
+!service/src/**

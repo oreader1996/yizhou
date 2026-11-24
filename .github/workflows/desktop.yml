@@ -1,0 +1,45 @@
+name: Desktop installers
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2022
+            bundle: nsis
+            artifact: '*.exe'
+          - os: macos-15
+            bundle: dmg
+            artifact: '*.dmg'
+          - os: ubuntu-24.04
+            bundle: deb
+            artifact: '*.deb'
+    runs-on: ${{ matrix.os }}
+    env:
+      TRANSLATION_ENDPOINT: ${{ vars.TRANSLATION_ENDPOINT }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev libxdo-dev
+      - run: npm ci
+      - run: npm test
+      - name: Check translation endpoint
+        run: node -e "if (new URL(process.env.TRANSLATION_ENDPOINT).protocol !== 'https:') process.exit(1)"
+      - run: npm run tauri build -- --bundles ${{ matrix.bundle }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: yizhou-${{ matrix.bundle }}
+          path: src-tauri/target/release/bundle/${{ matrix.bundle }}/${{ matrix.artifact }}
+          if-no-files-found: error
